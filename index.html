@@ -139,35 +139,6 @@
         .indicator.active {
             background-color: #ff4655;
         }
-
-        @keyframes marquee {
-            0% {
-                transform: translateX(0);
-            }
-
-            100% {
-                transform: translateX(-50%);
-            }
-        }
-
-        .animate-marquee {
-            animation: marquee 20s linear infinite;
-        }
-
-        .animate-marquee:hover {
-            animation-play-state: paused;
-        }
-
-        .sponsors-section {
-            opacity: 0;
-            transform: translateY(-20px);
-            transition: opacity 0.5s ease, transform 0.5s ease;
-        }
-
-        .sponsors-section.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
     </style>
 </head>
 
@@ -225,17 +196,15 @@
     <section class="sponsors-section bg-valDark py-6 border-t border-white/10" id="sponsors-section">
         <div class="max-w-7xl mx-auto px-4">
             <h3 class="text-center text-white/60 text-sm font-display tracking-widest mb-4">SPONSORS</h3>
-            <div class="overflow-hidden">
-                <div class="flex gap-8 animate-marquee whitespace-nowrap">
-                    <span class="text-white/80 font-display text-lg">Lactasoy</span>
-                    <span class="text-white/80 font-display text-lg">โมริโมริชาบู</span>
-                    <span class="text-white/80 font-display text-lg">แตกสวด</span>
-                    <span class="text-white/80 font-display text-lg">มหาสาร</span>
-                    <span class="text-white/80 font-display text-lg">วัดป่าวังน้ำเย็น</span>
-                    <span class="text-white/80 font-display text-lg">ร้าน ก.ไก่</span>
-                    <span class="text-white/80 font-display text-lg">Terminal 8</span>
-                    <span class="text-white/80 font-display text-lg">UniPharm</span>
-                </div>
+            <div class="flex flex-wrap justify-center gap-4 md:gap-8">
+                <span class="text-white/80 font-sans text-sm md:text-base">Lactasoy</span>
+                <span class="text-white/80 font-sans text-sm md:text-base">โมริโมริชาบู</span>
+                <span class="text-white/80 font-sans text-sm md:text-base">แตกสวด</span>
+                <span class="text-white/80 font-sans text-sm md:text-base">มหาสาร</span>
+                <span class="text-white/80 font-sans text-sm md:text-base">วัดป่าวังน้ำเย็น</span>
+                <span class="text-white/80 font-sans text-sm md:text-base">ร้าน ก.ไก่</span>
+                <span class="text-white/80 font-sans text-sm md:text-base">Terminal 8</span>
+                <span class="text-white/80 font-sans text-sm md:text-base">UniPharm</span>
             </div>
         </div>
     </section>
@@ -440,32 +409,7 @@
         document.addEventListener('DOMContentLoaded', () => {
             initSlider();
             renderAlbums();
-            initSponsorsScroll();
         });
-
-        function initSponsorsScroll() {
-            const sponsorsSection = document.getElementById('sponsors-section');
-            let lastScrollY = window.scrollY;
-            let isScrollingDown = false;
-
-            window.addEventListener('scroll', () => {
-                const currentScrollY = window.scrollY;
-                const sponsorsRect = sponsorsSection.getBoundingClientRect();
-                const windowHeight = window.innerHeight;
-
-                isScrollingDown = currentScrollY > lastScrollY;
-
-                if (sponsorsRect.top < windowHeight && sponsorsRect.bottom > 0) {
-                    if (isScrollingDown) {
-                        sponsorsSection.classList.add('visible');
-                    } else {
-                        sponsorsSection.classList.remove('visible');
-                    }
-                }
-
-                lastScrollY = currentScrollY;
-            });
-        }
     </script>
 </body>
 
