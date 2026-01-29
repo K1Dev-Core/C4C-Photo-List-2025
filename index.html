@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C4C 2025 Photo List</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="images/ico.ico" type="image/x-icon">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;600&family=Oswald:wght@400;500;700&display=swap"
+        rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        valRed: '#ff4655',
+                        valDark: '#0f1923',
+                        valGray: '#ece8e1',
+                        valBlack: '#111111'
+                    },
+                    fontFamily: {
+                        sans: ['Kanit', 'sans-serif'],
+                        display: ['Oswald', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #0f1923;
+            background-image:
+                linear-gradient(rgba(15, 25, 35, 0.9), rgba(15, 25, 35, 0.95)),
+                url('https://www.transparenttextures.com/patterns/cubes.png');
+            color: #ece8e1;
+            overflow-x: hidden;
+        }
+
+        .val-btn {
+            position: relative;
+            transition: all 0.2s ease;
+            clip-path: polygon(10% 0, 100% 0, 100% 70%, 90% 100%, 0 100%, 0 30%);
+            display: inline-block;
+        }
+
+        .val-btn:hover {
+            transform: translateY(-2px);
+            background-color: #ff4655;
+            color: white;
+            cursor: pointer;
+        }
+
+        .album-card {
+            transition: all 0.3s ease;
+            border: 1px solid rgba(236, 232, 225, 0.1);
+        }
+
+        .album-card:hover {
+            border-color: #ff4655;
+            transform: scale(1.02);
+            box-shadow: 0 0 20px rgba(255, 70, 85, 0.2);
+        }
+
+        .slider-container {
+            position: relative;
+            width: 100%;
+            height: 50vh;
+            min-height: 300px;
+            max-height: 500px;
+            overflow: hidden;
+            border-bottom: 2px solid #ff4655;
+        }
+
+        @media (max-width: 768px) {
+            .slider-container {
+                height: 40vh;
+                min-height: 250px;
+                max-height: 350px;
+            }
+        }
+
+        .slide-track {
+            display: flex;
+            transition: transform 0.5s ease-in-out;
+            height: 100%;
+        }
+
+        .slide-item {
+            min-width: 100%;
+            height: 100%;
+            position: relative;
+            background-size: contain;
+            background-position: center;
+            background-repeat: no-repeat;
+        }
+
+        .slide-item::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.1), rgba(0, 0, 0, 0.5));
+            pointer-events: none;
+        }
+
+        .slide-img {
+            display: none;
+        }
+
+        .slide-content {
+            position: absolute;
+            bottom: 40px;
+            left: 5%;
+            z-index: 10;
+            max-width: 600px;
+        }
+
+        .slide-indicators {
+            position: absolute;
+            bottom: 20px;
+            right: 5%;
+            display: flex;
+            gap: 10px;
+            z-index: 10;
+        }
+
+        .indicator {
+            width: 40px;
+            height: 6px;
+            background-color: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            transition: background-color 0.3s;
+            transform: skewX(-20deg);
+        }
+
+        .indicator.active {
+            background-color: #ff4655;
+        }
+
+        @keyframes marquee {
+            0% {
+                transform: translateX(0);
+            }
+
+            100% {
+                transform: translateX(-50%);
+            }
+        }
+
+        .animate-marquee {
+            animation: marquee 20s linear infinite;
+        }
+
+        .animate-marquee:hover {
+            animation-play-state: paused;
+        }
+
+        .sponsors-section {
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .sponsors-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+
+<body class="min-h-screen flex flex-col font-sans">
+
+    <header class="w-full bg-valBlack/50 p-4 border-b border-white/10 relative z-20">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-4">
+                <div
+                    class="w-10 h-10 bg-valRed flex items-center justify-center font-display font-bold text-2xl text-white">
+                    C4C
+                </div>
+                <div>
+                    <h1 class="font-display font-bold text-2xl tracking-wider uppercase leading-none">Photo List </h1>
+                    <p class="text-[10px] text-white/50 tracking-[0.2em] uppercase">รวมภาพทั้งหมด</p>
+                </div>
+            </div>
+
+        </div>
+    </header>
+
+    <section class="slider-container group">
+        <div class="slide-track" id="slider-track">
+        </div>
+
+        <button onclick="moveSlide(-1)"
+            class="absolute left-4 top-1/2 -translate-y-1/2 bg-black/50 text-white p-3 hover:bg-valRed transition opacity-0 group-hover:opacity-100 z-20">
+            &#10094;
+        </button>
+        <button onclick="moveSlide(1)"
+            class="absolute right-4 top-1/2 -translate-y-1/2 bg-black/50 text-white p-3 hover:bg-valRed transition opacity-0 group-hover:opacity-100 z-20">
+            &#10095;
+        </button>
+
+        <div class="slide-indicators" id="slider-indicators"></div>
+
+        <div class="absolute inset-0 border-[10px] border-white/5 pointer-events-none z-10"></div>
+    </section>
+
+    <main class="flex-grow p-6 md:p-12 relative">
+        <div class="max-w-7xl mx-auto relative z-10">
+            <div class="flex flex-col md:flex-row justify-between items-end mb-10 border-l-4 border-valRed pl-4">
+                <div>
+                    <h2 class="font-display text-4xl md:text-5xl font-bold uppercase mb-2">Select Album</h2>
+                    <p class="text-white/70 max-w-lg">เลือกช่วงเวลาเพื่อเข้าถึงไฟล์รูปภาพจากฐานข้อมูล Google Drive</p>
+                </div>
+
+            </div>
+
+            <div id="album-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            </div>
+        </div>
+    </main>
+
+    <section class="sponsors-section bg-valDark py-6 border-t border-white/10" id="sponsors-section">
+        <div class="max-w-7xl mx-auto px-4">
+            <h3 class="text-center text-white/60 text-sm font-display tracking-widest mb-4">SPONSORS</h3>
+            <div class="overflow-hidden">
+                <div class="flex gap-8 animate-marquee whitespace-nowrap">
+                    <span class="text-white/80 font-display text-lg">Lactasoy</span>
+                    <span class="text-white/80 font-display text-lg">โมริโมริชาบู</span>
+                    <span class="text-white/80 font-display text-lg">แตกสวด</span>
+                    <span class="text-white/80 font-display text-lg">มหาสาร</span>
+                    <span class="text-white/80 font-display text-lg">วัดป่าวังน้ำเย็น</span>
+                    <span class="text-white/80 font-display text-lg">ร้าน ก.ไก่</span>
+                    <span class="text-white/80 font-display text-lg">Terminal 8</span>
+                    <span class="text-white/80 font-display text-lg">UniPharm</span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer class="bg-gray-200 text-gray-800 py-4 mt-auto border-t-4 border-valRed relative z-20">
+        <div
+            class="max-w-[95%] mx-auto flex flex-col md:flex-row justify-between items-center gap-6 md:gap-4 font-sans font-bold">
+
+            <div class="flex items-center gap-4 order-2 md:order-1">
+                <span class="text-lg md:text-xl text-gray-700 whitespace-nowrap">วัดป่าวังน้ำเย็น</span>
+
+                <img src="/images/1.jpg" alt="Logo" class="h-10 w-auto object-contain mix-blend-multiply">
+
+                <img src="/images/2.jpg" alt="" class="h-12 w-auto object-contain">
+
+                <img src="/images/6.jpg" alt="" class="h-12 w-auto object-contain">
+            </div>
+
+
+            <div class="flex items-center gap-2 text-gray-600 order-1 md:order-2">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-valRed" viewBox="0 0 20 20"
+                    fill="currentColor">
+                    <path fill-rule="evenodd"
+                        d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z"
+                        clip-rule="evenodd" />
+                </svg>
+                <span class="text-lg md:text-xl font-medium">Nongkungsriwittayakan School</span>
+            </div>
+
+            <div class="flex items-center gap-4 order-3 md:order-3">
+                <img src="/images/3.jpg" alt="" class="h-10 w-auto object-contain mix-blend-multiply">
+
+                <img src="/images/4.jpg" alt="" class="h-10 w-auto object-contain mix-blend-multiply">
+
+                <img src="/images/5.png" alt="" class="h-10 w-auto object-contain mix-blend-multiply">
+
+                <span class="text-lg md:text-xl text-gray-700 whitespace-nowrap">ร้าน ก.ไก่</span>
+            </div>
+
+        </div>
+
+        <div class="text-center text-[10px] text-gray-400 mt-2 pt-2 border-t border-gray-300 w-full">
+            &copy; C4C 2025 Photo List.
+        </div>
+    </footer>
+
+    <script>
+        const sliderImages = [
+            {
+                src: "images/top.png",
+                title: "Day 0",
+                subtitle: "วันแรกเตรียมค่าย"
+            },
+
+        ];
+
+        const albums = [
+            {
+                title: "Day 0",
+                date: "28 JAN 2026",
+                category: "รวม",
+                description: "วันเตรียมค่าย",
+                image: "images/IMG_1504.JPG",
+                driveLink: "https://drive.google.com/drive/folders/1YD0g4dZWcx46HD2HeHtYHAdTrkY_m9f9?fbclid=IwY2xjawPodtVleHRuA2FlbQIxMABicmlkETFtMEJYVThCOXY3ZldtZmx6c3J0YwZhcHBfaWQQMjIyMDM5MTc4ODIwMDg5MgABHgQjJ7sozJsx5_IukOXsJn6_qnRGzxPl0hFF4tP5543EC1bJ-RughyN93NOq_aem_uV0e3lOOaTT93JCAaFho2Q"
+            },
+            {
+                title: "Day 1",
+                date: "29 JAN 2026 ",
+                category: "เช้า",
+                description: "วันจัดค่ายวันที่ 1",
+                image: "/images/iscome.png",
+                driveLink: ""
+            },
+            {
+                title: "Day 1",
+                date: "29 JAN 2026",
+                category: "บ่าย",
+                description: "วันจัดค่ายวันที่ 1",
+                image: "/images/iscome.png",
+                driveLink: ""
+            },
+            {
+                title: "Day 2",
+                date: "30 JAN 2026",
+                category: "เช้า",
+                description: "วันจัดค่ายวันที่ 2",
+                image: "/images/iscome.png",
+                driveLink: ""
+            },
+            {
+                title: "Day 2",
+                date: "30 JAN 2026",
+                category: "บ่าย",
+                description: "วันจัดค่ายวันที่ 2",
+                image: "/images/iscome.png",
+                driveLink: ""
+            }
+
+
+        ];
+
+        let currentSlide = 0;
+        let slideInterval;
+
+        function initSlider() {
+            const track = document.getElementById('slider-track');
+            const indicators = document.getElementById('slider-indicators');
+
+            sliderImages.forEach((img, index) => {
+                const slide = document.createElement('div');
+                slide.className = 'slide-item';
+                slide.style.backgroundImage = `url('${img.src}')`;
+                slide.innerHTML = `
+                    <div class="slide-content">
+                        <h2 class="text-4xl md:text-6xl font-display font-bold text-white uppercase mb-2 drop-shadow-lg" style="text-shadow: 2px 2px 0px #ff4655;">${img.title}</h2>
+                        <p class="text-white/80 font-display tracking-widest bg-black/60 inline-block px-2 py-1">${img.subtitle}</p>
+                    </div>
+                `;
+                track.appendChild(slide);
+
+                const dot = document.createElement('div');
+                dot.className = `indicator ${index === 0 ? 'active' : ''}`;
+                dot.onclick = () => goToSlide(index);
+                indicators.appendChild(dot);
+            });
+
+            startSlideTimer();
+        }
+
+        function updateSlidePosition() {
+            const track = document.getElementById('slider-track');
+            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+
+            const dots = document.querySelectorAll('.indicator');
+            dots.forEach((dot, index) => {
+                if (index === currentSlide) dot.classList.add('active');
+                else dot.classList.remove('active');
+            });
+        }
+
+        function moveSlide(direction) {
+            currentSlide += direction;
+            if (currentSlide >= sliderImages.length) currentSlide = 0;
+            if (currentSlide < 0) currentSlide = sliderImages.length - 1;
+            updateSlidePosition();
+            resetTimer();
+        }
+
+        function goToSlide(index) {
+            currentSlide = index;
+            updateSlidePosition();
+            resetTimer();
+        }
+
+        function startSlideTimer() {
+            slideInterval = setInterval(() => {
+                moveSlide(1);
+            }, 4000);
+        }
+
+        function resetTimer() {
+            clearInterval(slideInterval);
+            startSlideTimer();
+        }
+
+        function renderAlbums() {
+            const grid = document.getElementById('album-grid');
+
+            grid.innerHTML = '';
+            albums.forEach(album => {
+                const card = document.createElement('div');
+                card.className = 'album-card bg-[#1b2733] p-1 relative overflow-hidden group';
+                card.innerHTML = `
+                    <div class="relative h-48 w-full overflow-hidden bg-gray-800">
+                        <div class="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-all z-10"></div>
+                        <img src="${album.image}" alt="${album.title}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                        <div class="absolute top-0 right-0 bg-valRed text-white text-xs font-bold px-2 py-1 z-20 font-display tracking-wider">
+                            ${album.category}
+                        </div>
+                    </div>
+                    <div class="p-5 relative">
+                        <div class="flex items-center space-x-2 text-white/50 text-xs mb-2 font-display tracking-widest">
+                            <span class="w-2 h-2 bg-white/30 rounded-full"></span>
+                            <span>${album.date}</span>
+                        </div>
+                        <h3 class="text-xl font-bold text-white mb-2 uppercase group-hover:text-valRed transition-colors">${album.title}</h3>
+                        <p class="text-sm text-gray-400 mb-6 font-light h-10 overflow-hidden text-ellipsis line-clamp-2">${album.description}</p>
+                        ${album.driveLink ?
+                        `<a href="${album.driveLink}" target="_blank" class="val-btn w-full bg-white text-valDark font-bold text-center py-3 px-4 uppercase tracking-widest font-display text-sm">
+                                เปิดไฟล์
+                            </a>` :
+                        `<button disabled class="val-btn w-full bg-gray-500 text-white font-bold text-center py-3 px-4 uppercase tracking-widest font-display text-sm cursor-not-allowed opacity-50">
+                                รออัพเดท...
+                            </button>`
+                    }
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initSlider();
+            renderAlbums();
+            initSponsorsScroll();
+        });
+
+        function initSponsorsScroll() {
+            const sponsorsSection = document.getElementById('sponsors-section');
+            let lastScrollY = window.scrollY;
+            let isScrollingDown = false;
+
+            window.addEventListener('scroll', () => {
+                const currentScrollY = window.scrollY;
+                const sponsorsRect = sponsorsSection.getBoundingClientRect();
+                const windowHeight = window.innerHeight;
+
+                isScrollingDown = currentScrollY > lastScrollY;
+
+                if (sponsorsRect.top < windowHeight && sponsorsRect.bottom > 0) {
+                    if (isScrollingDown) {
+                        sponsorsSection.classList.add('visible');
+                    } else {
+                        sponsorsSection.classList.remove('visible');
+                    }
+                }
+
+                lastScrollY = currentScrollY;
+            });
+        }
+    </script>
+</body>
+
+</html>
