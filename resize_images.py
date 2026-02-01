@@ -7,7 +7,7 @@ import glob
 INPUT_DIR = "images"
 MAX_WIDTH = 1200
 MAX_HEIGHT = 1200
-QUALITY = 60
+QUALITY = 50
 
 # Supported image formats
 SUPPORTED_FORMATS = ('.jpg', '.jpeg', '.png', '.JPG', '.JPEG', '.PNG')
